@@ -128,3 +128,51 @@ input{
         background-color: rgb(149, 101, 109);
     }
 }
+@media (max-width: 500px) {
+    header{
+        height: 3em;
+    }
+    input{
+        font-size: 0.8em;
+        font-weight: 500;
+        width: 79%;
+        height: 50%;
+        margin-left: 5%;
+        &:focus{
+            border: 0.12em solid black;
+            outline: none;
+        }
+    }
+    .Avatar{
+        width: 1.7em;
+        height: 1.7em;
+    }
+    .Menu{
+        width: 13em;
+        height: 15em;
+        margin-left: 40vw;
+        margin-top: 16.5em;
+        border-radius: 0.3em;
+    }
+    .Menu .BtnM{
+        font-size: 1em;
+        font-weight: 500;
+        &:hover,
+        &:active {
+            font-size: 1em;            
+        }
+    }
+    .AvatarM{
+        width: 30%;
+        height: 25%;
+        margin-left: 35%;
+    }
+    .BtnLog{
+        margin-top: 4%;
+        font-size: 1em;
+        &:hover,
+        &:active {
+            font-size: 1em;            
+        }
+    }
+}

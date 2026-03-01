@@ -126,3 +126,31 @@
     transform: translateX(0%);
     transition: transform 5s ease-in-out;
 }
+
+@media(max-width: 500px){
+    .quoteAuth{display: none;}
+    .H2Auth{
+        font-size: 2.2em;
+        margin-top: 10%;
+    }
+    .H3Auth{
+        font-size: 1em;
+    }
+    .ArgumentError{
+        font-size: 0.6em;
+    }
+    .BtnLinkReg{
+        font-size: 0.65em;
+        &:hover,
+        &:active{
+            font-size: 0.65em;
+        }
+    }
+    .BtnAuth{
+        font-size: 1em;
+        &:hover,
+        &:active{
+            font-size: 1em;
+        }
+    }
+}

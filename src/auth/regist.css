@@ -28,3 +28,13 @@
         background-color: rgba(49, 128, 206, 0.942);
     }
 }
+
+@media(max-width: 500px){
+    .Regist{
+        width: 100%;
+        border-radius: 1.5em;
+    }
+    .BtnRegist{
+        width: 60%;
+    }
+}

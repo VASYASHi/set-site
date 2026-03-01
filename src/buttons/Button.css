@@ -31,3 +31,8 @@
 p{
     font-size: 0.32em;
 }
+@media (max-width: 500px) {
+    .Button{
+        display: none;
+    }
+}

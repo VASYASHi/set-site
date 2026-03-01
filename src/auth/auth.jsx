@@ -1,8 +1,8 @@
 import React, { useReducer } from "react";
-import styles from './auth.module.css'
-import './auth.css'
-import PassWord from '../assets/PassWord.png'
-import PassWordClose from '../assets/PassWordClose.png'
+import styles from './auth.module.css';
+import './auth.css';
+import PassWord from '../assets/PassWord.png';
+import PassWordClose from '../assets/PassWordClose.png';
 import AvatarA from "../assets/AvatarA.png";
 import { NavLink } from "react-router-dom";
 import { AuthTransition } from "../motion/gradientTransitionAuth";
@@ -37,7 +37,7 @@ function HeadAuth(){
         <div className={styles["Head-block"]}>
             <main>
                 <AuthTransition>
-                {/* <div className={styles.Auth}> */}
+                {/* <div className={`${styles.Auth} ${styles.AuthFontsAnim}`}> */}
                     <div className="H2Auth">Вход</div>
                     <div className="H3Auth">в учётную запись</div>
                     <input value={state.Email} onChange={(e) => dispatch({type:'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Почта/Телефон"></input>
