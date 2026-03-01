@@ -1,0 +1,8 @@
+.Head-block{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, rgb(152, 207, 195), rgb(128, 82, 182));
+    flex-direction: column;
+    font-size: 4.5vw;
+}

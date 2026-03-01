@@ -1,0 +1,130 @@
+header{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 1em;
+    background: linear-gradient(225deg, rgb(146, 206, 193), rgb(155, 127, 189) 100%);
+    box-shadow: 0 15px 20px 0 rgba(26, 8, 30, 0.2)
+}
+input{
+    display: flex;
+    margin-left: 12%;
+    color: black;
+    font-size: 0.25em;
+    padding-left: 0.5%;
+    padding-right: 0.5%;
+    width: 30%;
+    height: 45%;
+    border-radius: 50px;
+    border: 1px solid rgb(165, 162, 162);
+    background: rgba(139, 126, 146, 0.737);
+}
+.Avatar{
+    display: flex;
+    user-select: none;
+    width: 3.2%;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4%;
+    height: 70%;
+    border-radius: 50%;
+    border: 1px solid rgb(160, 126, 167);
+    background: rgba(163, 139, 168, 0.503);
+    &:hover {
+        border: 2px solid rgb(167, 126, 175);
+        background: rgba(163, 139, 168, 0.581);
+    }
+    &:active {
+        border: 1.5px solid rgb(179, 135, 188);
+        background: rgba(163, 139, 168, 0.637);
+    }
+}
+.ImgAvatar{
+    width: 85%;
+    height: 85%;
+}
+.Menu{
+    display: flex;
+    position: absolute;
+    user-select: none;
+    width: 3.3em;
+    height: 4em;
+    margin-left: 83vw;
+    margin-top: 4.8em;
+    border-radius: 0.2em;
+    background: rgba(163, 139, 168, 0.809);
+    flex-direction: column;
+    line-height: 1;
+}
+.Menu .BtnM{
+    width: 40%;
+    margin-top: 3%;
+    user-select: none;
+    cursor: pointer;
+    color: black;
+    font-size: 0.3em;
+    margin-left: 10%;
+    transition: font-size 0.12s ease, font-weight 0.12s ease;
+    &:hover{
+       font-size: 0.32em;
+       font-weight: 500; 
+    }
+    &:active{
+       font-size: 0.31em; 
+       font-weight: 450;
+    }
+}
+.AvatarM{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    margin-left: 31%;
+    margin-top: 5%;
+    border-radius: 50%;
+    width: 38%;
+    height: 30%;
+    background: rgba(140, 127, 143, 0.975);
+}
+.BtnLog{
+    display: flex;
+    align-items: center;
+    user-select: none;
+    justify-content: center;
+    border-radius: 0.3em;
+    margin-left: 30%;
+    margin-top: 3%;
+    color: black;
+    font-size: 0.3em;    
+    display: flex;
+    width: 40%;
+    height: 10%;
+    background-color: rgba(140, 127, 143, 0.975);
+    transition: font-size 0.12s ease, font-weight 0.12s ease, background-color 0.12s ease;
+    &:hover{
+       background-color: rgba(113, 153, 115, 0.975);
+       font-size: 0.31em;
+       font-weight: 500; 
+       color: black;
+    }
+    &:active{
+       font-size: 0.305em; 
+       font-weight: 450;
+       background-color: rgb(101, 152, 104);
+       color: black;
+    }
+}
+.Reg{
+    width: 90%;
+    margin-left: 5%;
+}
+.Rem{
+    margin-top: 18%;
+    &:hover{
+        background-color: rgba(151, 108, 115, 0.975);
+    }
+    &:active{
+        background-color: rgb(149, 101, 109);
+    }
+}

@@ -1,0 +1,128 @@
+.H2Auth{
+    font-size: 0.7em;
+    margin-top: 10%;
+    user-select: none;
+    line-height: 0.9;
+}
+.H3Auth{
+    font-size: 0.3em;
+    user-select: none;
+}
+.InputAuth{
+    width: 79%;
+    height: 7%;
+    margin-left: 0;
+    background: rgb(231, 230, 235);
+    margin-top: 10%;
+    padding-left: 3%;
+    padding-right: 1%;
+}
+.PassClickAuth{
+    display: flex;
+    color: black;
+    font-size: 0.2em;
+    margin-top: 0.6%;
+    margin-left: -56%;
+    cursor: pointer;
+    user-select: none;
+}
+.PassAuthBlock{
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 10%;
+    display: flex;
+    color: black;
+    width: 82%;
+    height: 7%;
+    border-radius: 50px;
+    border: 1px solid rgb(165, 162, 162);
+    background: rgba(139, 126, 146, 0.737);
+}
+.PassAuthBlock input{
+    position: absolute;
+    height: 100%;
+    margin-top: -0.5%;
+    z-index: 2;
+    transition: width 0.25s linear;
+}
+.PassImgAuth{
+    position: absolute;
+    z-index: 1;
+    /* width: 80%; */
+    height: 65%;
+    margin-left: 90.2%;
+}
+.ArgumentError{
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 0.5%;
+    color: rgb(229, 2, 2);
+    font-size: 0.2em;
+}
+.BtnAuth{
+    all: unset;
+    user-select: none;
+    cursor: pointer;
+    font-weight: 550;
+    font-size: 0.32em;
+    width: 28%;
+    height: 6%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1em;
+    margin-top: 26%;
+    background-color: rgba(110, 77, 187, 0.778);
+    transition: background-color 0.12s ease, font-size 0.12s ease;
+    &:hover{
+        background-color: rgba(107, 74, 184, 0.865);
+        font-size: 0.33em;
+    }
+    &:active{
+        background-color: rgba(115, 79, 199, 0.822);
+        font-size: 0.31em;
+    }
+    &:focus{
+        outline: none;
+    }
+}
+.BtnLinkReg{
+    margin-top: 1%;
+    user-select: none;
+    font-size: 0.25em;
+    color: black;
+    transition: font-size 0.12s ease, text-decoration 0.12s ease;
+    &:hover{
+        text-decoration: underline;
+        color: rgb(0, 0, 0);
+        font-size: 0.27em;
+    }
+}
+.quoteAuth{
+    position: absolute;
+    z-index: 1;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 40%;
+    margin-left: 60%;
+    /* background: greenyellow; */
+}
+.quoteImgAuth{
+    margin-top: 30%;
+    user-select: none;
+    width: 25%;
+}
+.quoteAuth p{
+    text-align: center;
+    color: rgb(77, 53, 106);
+    font-size: 0.3em;
+    width: 55%;
+    margin-top: 20%;
+}
+.MarginAuth{
+    background: gray;
+    transform: translateX(0%);
+    transition: transform 5s ease-in-out;
+}

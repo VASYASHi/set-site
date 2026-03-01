@@ -1,0 +1,33 @@
+.Head-block{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, rgb(152, 207, 195), rgb(128, 82, 182));
+    font-size: 4.5vw;
+}
+.Head-block main{
+    position: relative;
+    align-items: end;
+    display: flex;
+    width: 12em;
+    height: 9.5em;
+    background: rgb(178, 163, 219);
+    border-radius: 0.7em;
+}
+.Head-block main .Auth{
+    /* transition: transform 2s ease-in-out; */
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    border-radius: 0.7em;
+    background: linear-gradient(to left top, #78cfea, #5fc4ef, #4bb8f4, #47aaf6, #539bf6, #6393f7, #7589f5, #887ff1, #997bf1, #ab75f0, #bc6fed, #cc68e9);
+    width: 60%;
+    height: 100%;
+    /* margin-left: 40%; */
+    /* transform: translateX(66.7%); */
+    flex-direction: column;
+    align-items: center;
+}

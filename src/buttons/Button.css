@@ -1,0 +1,33 @@
+.Button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    color: rgb(69, 61, 77);
+    font-weight: 500;
+    width: 3em;
+    height: 0.8em;
+    margin-left: 0.5em;
+    background: linear-gradient(90deg, rgb(154, 186, 207) 56%, rgb(83, 137, 139));
+    border-radius: 15px;
+    box-shadow: 4px 4px 3px 0px rgba(34, 60, 80, 0.2);
+    user-select: none;
+    
+    &:hover {
+        background: linear-gradient(90deg, rgb(164, 196, 218) 56%, rgb(90, 152, 155));
+        box-shadow: 4px 4px 5px 2px rgba(34, 60, 80, 0.2);
+        font-weight: 600;
+        margin-top: -0.05em;
+    }
+
+    &:active {
+        background: linear-gradient(90deg, rgb(170, 205, 228)56%, rgb(99, 179, 183));
+        box-shadow: 4px 4px 4px 1px rgba(34, 60, 80, 0.2);
+        margin-top: 0;
+    }
+
+}
+p{
+    font-size: 0.32em;
+}

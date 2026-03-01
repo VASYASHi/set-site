@@ -1,0 +1,30 @@
+.RegistEnd{
+    justify-content: end;
+}
+.Regist{
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    border-radius: 0.7em;
+    flex-direction: column;
+    /* transform: translateX(-60%);
+    transition: transform 5s ease-in-out; */
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(to right bottom, #4dcbb1, #40c6bb, #3ac0c2, #3ebac7, #49b3c9, #49aece, #4ea9d1, #58a3d3, #619dd9, #7196dd, #878ddc, #9e82d6);
+}
+.RegistQuoteAuth{
+    margin-right: 60%;
+}
+.BtnRegist{
+    background-color: rgba(68, 120, 169, 0.778);
+    width: 48%;
+    margin-top: 13%;
+    &:hover{
+        background-color: rgba(46, 114, 182, 0.869);
+    }
+    &:active{
+        background-color: rgba(49, 128, 206, 0.942);
+    }
+}
