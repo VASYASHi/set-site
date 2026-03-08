@@ -1,4 +1,3 @@
-import React, { useReducer, useRef } from "react";
 import './main.css'
 import Header from "./header";
 

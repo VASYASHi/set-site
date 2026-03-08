@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useCallback, useEffect, useReducer } from "react";
 import styles from './auth.module.css';
 import PassWord from '../assets/PassWord.png'
 import PassWordClose from '../assets/PassWordClose.png'
@@ -17,6 +17,7 @@ const initRegist = {
     passwordConfirm: false,
     Email: '',
     ErrorEmail: '',     
+    loading: false,
 };
 
 function reducer(state, action){
@@ -45,14 +46,21 @@ function reducer(state, action){
             }
         case 'OutRegist':
             const outIfPass = state.PassWord === state.PassWordConfirm;
+            const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
             return {
                 ...state, 
-                ErrorPassWordConfirm: outIfPass ? state.PassWordConfirmError : 'Пароль и подтверждение не совпадают' 
+                ErrorPassWord: positivePassword ? '' : 'Минимум 8 символов',
+                ErrorPassWordConfirm: outIfPass ? '' : 'Пароль и подтверждение не совпадают' 
             }
         case 'HendelEmail':
             return { 
                 ...state, 
                 Email: action.value, ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' 
+            }
+        case 'ReLoading':
+            return {
+                ...state, 
+                loading: action.status
             }
         default:
             return{...state};
@@ -61,6 +69,51 @@ function reducer(state, action){
 
 function HeadRegist(){
     const [state, dispatch] = useReducer(reducer, initRegist);
+
+    const fuData = useCallback( async () => {
+    try{
+        dispatch({type: 'ReLoading', status: true});
+        
+        const hasLetter = /\p{L}/u.test(state.Email)
+        const formData = {
+            email: hasLetter ? state.Email.trim().replace(/ /g, '') : '',
+            password: state.PassWord.trim(),
+            number: hasLetter ? '' : state.Email.trim().replace(/[^0-9]/g, '')
+        }
+        console.log(`Успешная сборка формы: email: ${formData.email}, password: ${formData.password}, number: ${formData.number}`)
+        
+        const rec = await fetch('', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if(!rec.ok){
+            throw new Error(`Ошибка сервера: ${rec.status}`)
+        };
+        
+    } catch (error) {
+        console.log(error)
+    } finally {
+        dispatch({type: 'ReLoading', status: false})
+    }
+    }, [state.Email, state.PassWord])
+
+    const clickSetForm = useCallback(() => {
+        dispatch({type: 'OutRegist'});
+        const hasErrorNow = state.PassWord === state.PassWordConfirm
+        const stateErrorRender = state.ErrorEmail || state.ErrorPassWord || state.ErrorPassWordConfirm
+        const emptyInput = state.Email.trim() === ''|| state.PassWord.trim() === ''
+        const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
+
+        if(hasErrorNow && !stateErrorRender && !emptyInput && positivePassword){
+            fuData();
+        }
+    }, [ 
+        state.Email, state.PassWord, state.PassWordConfirm,
+        state.ErrorEmail, state.ErrorPassWord, state.ErrorPassWordConfirm,
+        fuData
+        ])
 
     return(
         <div className={styles['Head-block']}>
@@ -85,7 +138,7 @@ function HeadRegist(){
                         <img onClick={() => dispatch({type:'RepassConfirm'})} className="PassImgAuth" src={state.passwordConfirm ? PassWord : PassWordClose}/>
                     </div>
                     <div className="ArgumentError">{state.ErrorPassWordConfirm}</div>
-                    <button className="BtnAuth BtnRegist" onClick={() => dispatch({type:'OutRegist'})}>Зарегистрироваться</button>
+                    <button className="BtnAuth BtnRegist" onClick={clickSetForm}>Зарегистрироваться</button>
                     <NavLink to='/auth' end className="BtnLinkReg">Есть аккаунт?</NavLink>
                 {/* </div> */}
                 </RegistTransition>
