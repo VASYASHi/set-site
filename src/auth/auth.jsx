@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useCallback, useEffect, useReducer, useRef } from "react";
 import styles from './auth.module.css';
 import './auth.css';
 import PassWord from '../assets/PassWord.png';
@@ -11,20 +11,74 @@ import { AuthTransition } from "../motion/gradientTransitionAuth";
 
 const initAuth = {
     password: false,
+    loading: false,
+    attack: false,
+    count: 0, 
     PassWord: '',
     ErrorPassWord: '',
     Email: '',
-    ErrorEmail: '', 
+    ErrorEmail: '',
 }
 
 function reducer(state, action){
     switch(action.type){
-        case'Repass':
-            return {...state, password: !state.password}
-        case'HendelPass':
-            return {...state, PassWord: action.value, ErrorPassWord: action.value ? '' : 'Пожалуйста, заполните это поле' }
-        case'HendelEmail':
-            return { ...state, Email: action.value, ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' }
+        case 'Repass':
+            return {
+                ...state,
+                password: !state.password
+            }
+        case 'HendelPass':
+            return {
+                ...state,
+                PassWord: action.value,
+                ErrorPassWord: action.value ? '' : 'Пожалуйста, заполните это поле' 
+            }
+        case 'HendelPassLight':
+            return {
+                ...state,
+                ErrorPassWord: 'Пожалуйста, заполните это поле' 
+            }
+        case 'HendelEmail':
+            return { 
+                ...state,
+                Email: action.value,
+                ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' 
+            }
+        case 'HendelEmailLight':
+            return {
+                ...state,
+                ErrorEmail: 'Пожалуйста, заполните это поле' 
+            }
+        case 'ReLoading':
+            return{
+                ...state,
+                loading: action.status
+            }
+        case 'UpCount':
+            return{
+                ...state, 
+                count: state.count + 1,
+            }
+        case 'ReCount':
+            return{
+                ...state,
+                count: action.placeholder
+            }
+        case 'ReAttack':
+            return{
+                ...state,
+                attack: action.status, 
+            }
+        case 'OutRegist':
+            const positiveEmail = state.Email.trim().length <= 254
+            const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
+            const attackDefense = state.count >= 5
+            
+            return{
+                ...state,
+                ErrorEmail: positiveEmail ? '' : 'Введите корректный email или телефон',
+                ErrorPassWord: !positivePassword ? 'Введите корректный пароль' : attackDefense || state.attack ? 'Повторите попытку через несколько минут.' : '',
+            }
         default:
             return{...state}
     };
@@ -32,6 +86,87 @@ function reducer(state, action){
 
 function HeadAuth(){
     const [state, dispatch] = useReducer(reducer, initAuth);
+
+    const fuData = useCallback(async () => {
+        try{
+            dispatch({type: 'ReLoading', status: true});
+
+            const hasLetter = /\p{L}/u.test(state.Email);
+
+            const formData = {
+                email: hasLetter ? state.Email.trim().replace(/ /g, '') : '',
+                password: state.PassWord.trim().replace(/ /g, ''),
+                number: hasLetter ? '' : state.Email.trim().replace(/[^0-9]/g, '')
+            };
+            console.log(`Успешная сборка формы: email: ${formData.email}, password: ${formData.password}, number: ${formData.number}`)
+
+            const rec = await fetch('', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+
+            if(!rec.ok){
+                throw new Error(`Ошибка сервера: ${rec.status}`);
+            }
+
+        } catch(error) {
+            console.log(`Ошибки: ${error}`);
+        } finally {
+            dispatch({type: 'ReLoading', status: false});
+        }
+    }, [state.Email, state.PassWord]);
+
+    useEffect(() => {
+        if(state.count === 5){
+            const storeData = String(Date.now() + 60000);
+            localStorage.setItem('lastDate', storeData);
+            const time = setTimeout(() => {
+                localStorage.removeItem('lastDate')
+                dispatch({type: 'ReCount', placeholder: 0})
+            }, 60000)
+            return () => clearTimeout(time)
+        }
+    }, [state.count])
+
+    useEffect(() => {
+        const remAttackData = Number(localStorage.getItem('lastDate'));
+        const nowAttackData = Date.now();
+        if(remAttackData && remAttackData > nowAttackData){
+            dispatch({type: 'ReAttack', status: true})
+            const time = remAttackData - nowAttackData;
+            const timeOut = setTimeout(() => {
+                dispatch({type: 'ReCount', placeholder: 0})
+                dispatch({type: 'ReAttack', status: false})
+            }, time);
+            return () => clearTimeout(timeOut)
+        } else {
+            localStorage.removeItem('lastDate')
+            dispatch({type: 'ReCount', placeholder: 0})
+            dispatch({type: 'ReAttack', status: false})
+        }
+    }, [])
+
+    const clickGetForm = useCallback(() => {
+        dispatch({type: 'OutRegist'})
+        const hasEmpty = state.Email.trim() === '' || state.PassWord.trim() === ''
+        const positiveEmail = state.Email.trim().length <= 254
+        const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
+        const attackDefense = state.count >= 5
+
+        if(!hasEmpty && positiveEmail && positivePassword && !attackDefense && !state.attack){
+            dispatch({type: 'UpCount'})
+            console.log(state.count)
+            fuData()
+        } else {
+        if (state.Email.trim() === ''){
+            dispatch({type: 'HendelEmailLight'})
+        }
+        if (state.PassWord.trim() === ''){
+            dispatch({type: 'HendelPassLight'})
+        }
+        }
+    }, [state.PassWord, state.Email, state.count, state.attack , fuData])
 
     return(
         <div className={styles["Head-block"]}>
@@ -48,7 +183,7 @@ function HeadAuth(){
                     </div>
                     <div className="ArgumentError">{state.ErrorPassWord}</div>
                     <a className="BtnLinkReg" style={{marginLeft:'-50%'}}>Забыли пароль?</a>
-                    <button className="BtnAuth">Войти</button>
+                    <button className="BtnAuth" onClick={clickGetForm}>Войти</button>
                     <NavLink to='/regist' end className="BtnLinkReg">Нет аккаунта?</NavLink>
                 {/* </div> */}
                 </AuthTransition>

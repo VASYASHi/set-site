@@ -9,15 +9,17 @@ import { NavLink } from "react-router-dom";
 import { RegistTransition } from "../motion/gradientTransitionAuth";
 
 const initRegist = {
+    attack: false,
+    loading: false,
     password: false,
+    passwordConfirm: false,
+    count: 0,
     PassWord: '',
     ErrorPassWord: '',
     PassWordConfirm: '',
     ErrorPassWordConfirm: '',
-    passwordConfirm: false,
     Email: '',
     ErrorEmail: '',     
-    loading: false,
 };
 
 function reducer(state, action){
@@ -44,18 +46,42 @@ function reducer(state, action){
                 PassWordConfirm: action.value,  
                 ErrorPassWordConfirm: action.value ? '' : 'Пожалуйста, заполните это поле'
             }
+        case 'UpCount':
+            return{
+                ...state, 
+                count: state.count + 1,
+            }
+        case 'ReCount':
+            return{
+                ...state,
+                count: action.placeholder
+            }
         case 'OutRegist':
+            const positiveEmail = state.Email.trim().length <= 254;
             const outIfPass = state.PassWord === state.PassWordConfirm;
-            const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
+            const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64;
+            const attackDefense = state.count >= 5;
             return {
                 ...state, 
-                ErrorPassWord: positivePassword ? '' : 'Минимум 8 символов',
-                ErrorPassWordConfirm: outIfPass ? '' : 'Пароль и подтверждение не совпадают' 
+                ErrorPassWord: positivePassword ? '' : 'Введите от 8 до 64 символов',
+                ErrorPassWordConfirm: !outIfPass ? 'Пароль и подтверждение не совпадают' : attackDefense || state.attack ? 'Повторите попытку через несколько минут.' : '',
+                ErrorEmail: positiveEmail ? '' : 'Введите корректный email или телефон'
             }
         case 'HendelEmail':
             return { 
                 ...state, 
-                Email: action.value, ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' 
+                Email: action.value,
+                ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' 
+            }
+        case 'HendelEmailLight':
+            return {
+                ...state,
+                ErrorEmail: 'Пожалуйста, заполните это поле'
+            }
+        case 'ReAttack':
+            return{
+                ...state,
+                attack: action.status
             }
         case 'ReLoading':
             return {
@@ -77,7 +103,7 @@ function HeadRegist(){
         const hasLetter = /\p{L}/u.test(state.Email)
         const formData = {
             email: hasLetter ? state.Email.trim().replace(/ /g, '') : '',
-            password: state.PassWord.trim(),
+            password: state.PassWord.trim().replace(/ /g, ''),
             number: hasLetter ? '' : state.Email.trim().replace(/[^0-9]/g, '')
         }
         console.log(`Успешная сборка формы: email: ${formData.email}, password: ${formData.password}, number: ${formData.number}`)
@@ -99,20 +125,56 @@ function HeadRegist(){
     }
     }, [state.Email, state.PassWord])
 
+    useEffect(() => {
+        if(state.count === 5){
+            const storeData = String(Date.now() + 60000);
+            localStorage.setItem('lastRegistDate', storeData);
+            const time = setTimeout(() => {
+                localStorage.removeItem('lastRegistDate')
+                dispatch({type: 'ReCount', placeholder: 0})
+            }, 60000)
+            return () => clearTimeout(time)
+        }
+    }, [state.count])
+
+    useEffect(() => {
+        const remAttackData = Number(localStorage.getItem('lastRegistDate'));
+        const nowAttackData = Date.now();
+        if(remAttackData && remAttackData > nowAttackData){
+            dispatch({type: 'ReAttack', status: true})
+            const time = remAttackData - nowAttackData;
+            const timeOut = setTimeout(() => {
+                dispatch({type: 'ReCount', placeholder: 0})
+                dispatch({type: 'ReAttack', status: false})
+            }, time);
+            return () => clearTimeout(timeOut)
+        } else {
+            localStorage.removeItem('lastRegistDate')
+            dispatch({type: 'ReCount', placeholder: 0})
+            dispatch({type: 'ReAttack', status: false})
+        }
+    }, [])    
+
     const clickSetForm = useCallback(() => {
         dispatch({type: 'OutRegist'});
         const hasErrorNow = state.PassWord === state.PassWordConfirm
         const stateErrorRender = state.ErrorEmail || state.ErrorPassWord || state.ErrorPassWordConfirm
         const emptyInput = state.Email.trim() === ''|| state.PassWord.trim() === ''
         const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
+        const positiveEmail = state.Email.trim().length <= 254
+        const attackDefense = state.count >= 5
 
-        if(hasErrorNow && !stateErrorRender && !emptyInput && positivePassword){
+        if(hasErrorNow && !stateErrorRender && !emptyInput && positivePassword && positiveEmail && !state.attack && !attackDefense){
+            dispatch({type: 'UpCount'})
             fuData();
+        } else if(state.Email.trim() === ''){
+            dispatch({type: 'HendelEmailLight'})
         }
+
     }, [ 
-        state.Email, state.PassWord, state.PassWordConfirm,
+        state.Email, state.PassWord, state.PassWordConfirm, state.attack,
         state.ErrorEmail, state.ErrorPassWord, state.ErrorPassWordConfirm,
-        fuData
+        state.count ,fuData
         ])
 
     return(
