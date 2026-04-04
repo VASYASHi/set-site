@@ -8,6 +8,33 @@ import './regist.css'
 import { NavLink } from "react-router-dom";
 import { RegistTransition } from "../motion/gradientTransitionAuth";
 
+interface State {
+    attack: boolean
+    loading: boolean
+    password: boolean
+    passwordConfirm: boolean
+    count: number
+    PassWord: string
+    ErrorPassWord: string
+    PassWordConfirm: string
+    ErrorPassWordConfirm: string
+    Email: string
+    ErrorEmail: string     
+}
+
+type ActionState = 
+{type: 'Repass'}|
+{type: 'RepassConfirm'}|
+{type: 'HendelPass', value: string}|
+{type: 'HendelPassConfirm', value: string}|
+{type: 'UpCount'}|
+{type: 'ReCount', placeholder: number}|
+{type: 'OutRegist'}|
+{type: 'HendelEmail', value: string}|
+{type: 'HendelEmailLight'}|
+{type: 'ReAttack', status: boolean}|
+{type: 'ReLoading', status: boolean}
+
 const initRegist = {
     attack: false,
     loading: false,
@@ -22,7 +49,8 @@ const initRegist = {
     ErrorEmail: '',     
 };
 
-function reducer(state, action){
+
+function reducer(state: State, action: ActionState){
     switch(action.type){
         case 'Repass':
             return {

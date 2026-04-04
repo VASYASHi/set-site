@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useContext} from "react";
 
 export const ThemeContext = React.createContext<ThemeProvider | null>(null);
 
@@ -42,4 +42,14 @@ export default function ThemeProvider ({children} : ThemeProviderProps){
             {children}       
         </ThemeContext.Provider>
     );
+};
+
+export function useThemeContext (){
+    const context = useContext(ThemeContext)
+    
+    if(!context){
+        throw new Error('useThemeContext должен использоваться внутри ThemeProvider')
+    }
+
+    return context
 };

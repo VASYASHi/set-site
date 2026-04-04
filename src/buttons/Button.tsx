@@ -1,7 +1,11 @@
 import React from "react";
 import './Button.css'
 
-export default function Button ({children}){
+interface ButtonNode {
+    children: React.ReactNode
+}
+
+export default function Button ({children} : ButtonNode){
     return(
         <div className="Button"><p>{children}</p></div>
     );

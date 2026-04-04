@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, MotionStyle } from "framer-motion";
 import styles from "../auth/auth.module.css";
 
+interface TransitionChild {
+    children: React.ReactNode
+}
 
-
- export function AuthTransition({children}){
+export function AuthTransition({children} : TransitionChild){
     const [mobile, setMobile] = useState(false);
 
     useEffect(() => {
@@ -31,7 +33,7 @@ import styles from "../auth/auth.module.css";
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
-    }
+    } satisfies MotionStyle
 
     return(
         <motion.div
@@ -44,7 +46,7 @@ import styles from "../auth/auth.module.css";
             <motion.div
                 initial={{opacity: 0}}
                 exit={{opacity: 1}}
-                style={gradienExitAuth}
+                style= {gradienExitAuth}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
             />
             {children}
@@ -52,7 +54,7 @@ import styles from "../auth/auth.module.css";
     )
 }
 
- export function RegistTransition({children}){
+export function RegistTransition({children} : TransitionChild){
     const [mobile, setMobile] = useState(false);
 
     useEffect(() => {
@@ -79,7 +81,7 @@ import styles from "../auth/auth.module.css";
         borderRadius: '0.7em',
         width: '100%',
         height: '100%',
-    }
+    } satisfies MotionStyle
 
     return(
         <motion.div

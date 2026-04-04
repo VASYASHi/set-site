@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef } from "react";
+import React, { useCallback, useEffect, useReducer } from "react";
 import styles from './auth.module.css';
 import './auth.css';
 import PassWord from '../assets/PassWord.png';
@@ -7,9 +7,30 @@ import AvatarA from "../assets/AvatarA.png";
 import { NavLink } from "react-router-dom";
 import { AuthTransition } from "../motion/gradientTransitionAuth";
 
+interface State {
+    password: boolean
+    loading: boolean
+    attack: boolean
+    count: number
+    PassWord: string
+    ErrorPassWord: string
+    Email: string
+    ErrorEmail: string
+}
 
+type ActionState = 
+{type: 'Repass'}|
+{type: 'HendelPass', value: string}|
+{type: 'HendelPassLight'}|
+{type: 'HendelEmail', value: string}|
+{type: 'HendelEmailLight'}|
+{type: 'ReLoading', status: boolean}|
+{type: 'UpCount'}|
+{type: 'ReCount', placeholder: number}|
+{type: 'ReAttack', status: boolean}|
+{type: 'OutRegist'}
 
-const initAuth = {
+const initAuth: State = {
     password: false,
     loading: false,
     attack: false,
@@ -20,7 +41,7 @@ const initAuth = {
     ErrorEmail: '',
 }
 
-function reducer(state, action){
+function reducer(state: State, action: ActionState) :State{
     switch(action.type){
         case 'Repass':
             return {

@@ -1,13 +1,21 @@
-import React, { useContext, useReducer, useRef } from "react";
+import React, { useReducer, useRef } from "react";
 import './header.css'
 import Button from "../buttons/Button";
 import Avatar from "../assets/Avatar.png";
 import AvatarA from "../assets/AvatarA.png";
 import { useClickOutside } from "../hooks/hooks";
-import { ThemeContext } from "../context/ThemeContext";
+import { useThemeContext } from "../context/ThemeContext";
 import { NavLink } from "react-router-dom";
 
-function reducer (state, action){
+interface StateReducer {
+    open: boolean
+}
+
+type ActionReducer = 
+    {type: 'ReOPEN'}|
+    {type: 'FalOPEN'}
+
+function reducer (state: StateReducer, action: ActionReducer){
     switch(action.type){
         case 'ReOPEN' :
             return { open: !state.open };
@@ -19,10 +27,10 @@ function reducer (state, action){
 };
 
 export default function Header(){
-    const {stateTheme} = useContext(ThemeContext)
+    const {stateTheme} = useThemeContext()
     const [state, dispatch] = useReducer(reducer, {open: false});
-    const refMenu = useRef(null);
-    const btnRef = useRef(null);
+    const refMenu = useRef<HTMLDivElement>(null);
+    const btnRef = useRef<HTMLDivElement>(null);
     useClickOutside(refMenu, () => dispatch({type:'FalOPEN'}), btnRef)
     return(
         <header>
