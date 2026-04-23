@@ -23,7 +23,6 @@ type ActionState =
 {type: 'HendelPass', value: string}|
 {type: 'HendelPassLight'}|
 {type: 'HendelEmail', value: string}|
-{type: 'HendelEmailLight'}|
 {type: 'ReLoading', status: boolean}|
 {type: 'UpCount'}|
 {type: 'ReCount', placeholder: number}|
@@ -65,11 +64,6 @@ function reducer(state: State, action: ActionState) :State{
                 Email: action.value,
                 ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' 
             }
-        case 'HendelEmailLight':
-            return {
-                ...state,
-                ErrorEmail: 'Пожалуйста, заполните это поле' 
-            }
         case 'ReLoading':
             return{
                 ...state,
@@ -91,25 +85,27 @@ function reducer(state: State, action: ActionState) :State{
                 attack: action.status, 
             }
         case 'OutRegist':
-            const positiveEmail = state.Email.trim().length <= 254
-            const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
-            const attackDefense = state.count >= 5
+            const hasEmpty = state.Email.trim() === '';
+            const hasEmptyPass = state.PassWord.trim() === '';
+            const positiveEmail = state.Email.trim().length <= 254;
+            const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64;
+            const attackDefense = state.count >= 5;
             
             return{
                 ...state,
-                ErrorEmail: positiveEmail ? '' : 'Введите корректный email или телефон',
-                ErrorPassWord: !positivePassword ? 'Введите корректный пароль' : attackDefense || state.attack ? 'Повторите попытку через несколько минут.' : '',
+                ErrorEmail:  hasEmpty ? 'Пожалуйста, заполните это поле' : !positiveEmail ? 'Введите корректный email или телефон' : '',
+                ErrorPassWord: hasEmptyPass ? 'Пожалуйста, заполните это поле' : !positivePassword ? 'Введите корректный пароль' : attackDefense || state.attack ? 'Повторите попытку через несколько минут.' : '',
             }
         default:
             return{...state}
     };
 };
 
-function HeadAuth(){
+export default function Auth(){
     const [state, dispatch] = useReducer(reducer, initAuth);
 
     const fuData = useCallback(async () => {
-        try{
+        try {
             dispatch({type: 'ReLoading', status: true});
 
             const hasLetter = /\p{L}/u.test(state.Email);
@@ -168,7 +164,7 @@ function HeadAuth(){
         }
     }, [])
 
-    const clickGetForm = useCallback(() => {
+    const clickSetForm = useCallback(() => {
         dispatch({type: 'OutRegist'})
         const hasEmpty = state.Email.trim() === '' || state.PassWord.trim() === ''
         const positiveEmail = state.Email.trim().length <= 254
@@ -179,18 +175,12 @@ function HeadAuth(){
             dispatch({type: 'UpCount'})
             console.log(state.count)
             fuData()
-        } else {
-        if (state.Email.trim() === ''){
-            dispatch({type: 'HendelEmailLight'})
-        }
-        if (state.PassWord.trim() === ''){
-            dispatch({type: 'HendelPassLight'})
-        }
-        }
+        } 
+
     }, [state.PassWord, state.Email, state.count, state.attack , fuData])
 
     return(
-        <div className={styles["Head-block"]}>
+        <form className={styles["Head-block"]} onSubmit={(e) => {e.preventDefault(); clickSetForm()}}>
             <main>
                 <AuthTransition>
                 {/* <div className={`${styles.Auth} ${styles.AuthFontsAnim}`}> */}
@@ -203,8 +193,8 @@ function HeadAuth(){
                         <img onClick={() => dispatch({type:'Repass'})} className="PassImgAuth" src={state.password ? PassWord : PassWordClose}/>
                     </div>
                     <div className="ArgumentError">{state.ErrorPassWord}</div>
-                    <a className="BtnLinkReg" style={{marginLeft:'-50%'}}>Забыли пароль?</a>
-                    <button className="BtnAuth" onClick={clickGetForm}>Войти</button>
+                    <NavLink to='/confirm_password' end className="BtnLinkReg" style={{marginLeft:'-50%'}}>Забыли пароль?</NavLink>
+                    <button className="BtnAuth" type='submit'>Войти</button>
                     <NavLink to='/regist' end className="BtnLinkReg">Нет аккаунта?</NavLink>
                 {/* </div> */}
                 </AuthTransition>
@@ -214,12 +204,6 @@ function HeadAuth(){
                     <p>Мы ценим вашу конфиденциальность. Вход означает согласие с использованием cookies.</p>
                 </div>
             </main>
-        </div>
-    )
-};
-
-export default function Auth(){
-    return(
-        <HeadAuth/>
+        </form>
     )
 };

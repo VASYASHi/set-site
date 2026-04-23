@@ -31,7 +31,6 @@ type ActionState =
 {type: 'ReCount', placeholder: number}|
 {type: 'OutRegist'}|
 {type: 'HendelEmail', value: string}|
-{type: 'HendelEmailLight'}|
 {type: 'ReAttack', status: boolean}|
 {type: 'ReLoading', status: boolean}
 
@@ -85,26 +84,24 @@ function reducer(state: State, action: ActionState){
                 count: action.placeholder
             }
         case 'OutRegist':
+            const emptyInput = state.Email.trim() === '';
+            const emptyInputPass = state.PassWord.trim() === '';
+            const emptyInputPassConfirm = state.PassWordConfirm.trim() === '';
             const positiveEmail = state.Email.trim().length <= 254;
             const outIfPass = state.PassWord === state.PassWordConfirm;
             const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64;
             const attackDefense = state.count >= 5;
             return {
                 ...state, 
-                ErrorPassWord: positivePassword ? '' : 'Введите от 8 до 64 символов',
-                ErrorPassWordConfirm: !outIfPass ? 'Пароль и подтверждение не совпадают' : attackDefense || state.attack ? 'Повторите попытку через несколько минут.' : '',
-                ErrorEmail: positiveEmail ? '' : 'Введите корректный email или телефон'
+                ErrorEmail: emptyInput ? 'Пожалуйста, заполните это поле' : !positiveEmail ? 'Введите корректный email или телефон' : '',
+                ErrorPassWord: emptyInputPass ? 'Пожалуйста, заполните это поле' : !positivePassword ? 'Введите от 8 до 64 символов' : '',
+                ErrorPassWordConfirm: emptyInputPassConfirm ? 'Пожалуйста, заполните это поле' : !outIfPass ? 'Пароль и подтверждение не совпадают' : attackDefense || state.attack ? 'Повторите попытку через несколько минут.' : '',
             }
         case 'HendelEmail':
             return { 
                 ...state, 
                 Email: action.value,
                 ErrorEmail: action.value ? '' : 'Пожалуйста, заполните это поле' 
-            }
-        case 'HendelEmailLight':
-            return {
-                ...state,
-                ErrorEmail: 'Пожалуйста, заполните это поле'
             }
         case 'ReAttack':
             return{
@@ -121,7 +118,7 @@ function reducer(state: State, action: ActionState){
     }
 };
 
-function HeadRegist(){
+export default function Regist(){
     const [state, dispatch] = useReducer(reducer, initRegist);
 
     const fuData = useCallback( async () => {
@@ -185,19 +182,17 @@ function HeadRegist(){
 
     const clickSetForm = useCallback(() => {
         dispatch({type: 'OutRegist'});
-        const hasErrorNow = state.PassWord === state.PassWordConfirm
-        const stateErrorRender = state.ErrorEmail || state.ErrorPassWord || state.ErrorPassWordConfirm
-        const emptyInput = state.Email.trim() === ''|| state.PassWord.trim() === ''
-        const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64
-        const positiveEmail = state.Email.trim().length <= 254
-        const attackDefense = state.count >= 5
+        const hasErrorNow = state.PassWord === state.PassWordConfirm;
+        const stateErrorRender = state.ErrorEmail || state.ErrorPassWord || state.ErrorPassWordConfirm;
+        const emptyInput = state.Email.trim() === ''|| state.PassWord.trim() === '';
+        const positivePassword = state.PassWord.trim().length >= 8 && state.PassWord.trim().length <= 64;
+        const positiveEmail = state.Email.trim().length <= 254;
+        const attackDefense = state.count >= 5;
 
         if(hasErrorNow && !stateErrorRender && !emptyInput && positivePassword && positiveEmail && !state.attack && !attackDefense){
             dispatch({type: 'UpCount'})
             fuData();
-        } else if(state.Email.trim() === ''){
-            dispatch({type: 'HendelEmailLight'})
-        }
+        }; 
 
     }, [ 
         state.Email, state.PassWord, state.PassWordConfirm, state.attack,
@@ -206,7 +201,7 @@ function HeadRegist(){
         ])
 
     return(
-        <div className={styles['Head-block']}>
+        <form className={styles["Head-block"]} onSubmit={(e) => {e.preventDefault(); clickSetForm()}}>
             <main className="RegistEnd">
                 <div className="quoteAuth RegistQuoteAuth">
                     <img className="quoteImgAuth" src={AvatarA} alt="Grape"/>
@@ -228,17 +223,12 @@ function HeadRegist(){
                         <img onClick={() => dispatch({type:'RepassConfirm'})} className="PassImgAuth" src={state.passwordConfirm ? PassWord : PassWordClose}/>
                     </div>
                     <div className="ArgumentError">{state.ErrorPassWordConfirm}</div>
-                    <button className="BtnAuth BtnRegist" onClick={clickSetForm}>Зарегистрироваться</button>
+                    <button className="BtnAuth BtnRegist" type="submit">Зарегистрироваться</button>
                     <NavLink to='/auth' end className="BtnLinkReg">Есть аккаунт?</NavLink>
                 {/* </div> */}
                 </RegistTransition>
             </main>
-        </div>
+        </form>
     )
 };
 
-export default function Regist(){
-    return(
-        <HeadRegist/>
-    )
-};

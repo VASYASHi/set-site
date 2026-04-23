@@ -9,18 +9,36 @@ import { NavLink } from "react-router-dom";
 
 interface StateReducer {
     open: boolean
+    search: string
 }
 
 type ActionReducer = 
     {type: 'ReOPEN'}|
-    {type: 'FalOPEN'}
+    {type: 'FalOPEN'}|
+    {type: 'HendelSearch', value: string}
+
+const initState: StateReducer = {
+    open: false,
+    search: ''
+}
 
 function reducer (state: StateReducer, action: ActionReducer){
     switch(action.type){
         case 'ReOPEN' :
-            return { open: !state.open };
+            return {
+                ...state,
+                open: !state.open 
+            };
         case 'FalOPEN' :
-            return {open: false};
+            return {
+                ...state,
+                open: false
+            };
+        case 'HendelSearch':
+            return {
+                ...state,
+                search: action.value
+            }; 
         default: 
             return {...state}
     }
@@ -28,7 +46,7 @@ function reducer (state: StateReducer, action: ActionReducer){
 
 export default function Header(){
     const {stateTheme} = useThemeContext()
-    const [state, dispatch] = useReducer(reducer, {open: false});
+    const [state, dispatch] = useReducer(reducer, initState);
     const refMenu = useRef<HTMLDivElement>(null);
     const btnRef = useRef<HTMLDivElement>(null);
     useClickOutside(refMenu, () => dispatch({type:'FalOPEN'}), btnRef)
@@ -37,7 +55,7 @@ export default function Header(){
             <Button>Главная</Button>
             <Button>Лента</Button>
             <Button>О нас</Button>
-            <input></input>
+            <input value={state.search} onChange={(e) => dispatch({type:'HendelSearch', value: e.target.value})}></input>
             <div ref={btnRef} onClick={() => dispatch({type:'ReOPEN'})} className="Avatar">
                <img className="ImgAvatar" src={stateTheme.account ? AvatarA : Avatar} alt="Menu"/>
             </div>

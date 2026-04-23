@@ -1,0 +1,97 @@
+form.pure-wrapper {
+  margin: 0;
+  padding: 0;
+  display: block; /* сохраняем семантику и доступность */
+  all: unset;     /* сбрасывает все унаследованные стили браузера */
+}
+.ConfirmAuth{
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    border-radius: 0.7em;
+    flex-direction: column;
+    /* transform: translateX(-60%);
+    transition: transform 5s ease-in-out; */
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(to right bottom, #4dcbb1, #40c6bb, #3ac0c2, #3ebac7, #49b3c9, #49aece, #4ea9d1, #58a3d3, #619dd9, #7196dd, #878ddc, #9e82d6);
+}
+.BtnConfirmAuth{
+    background-color: rgba(68, 120, 169, 0.778);
+    width: 48%;
+    position: absolute;
+    margin-top: 57%;
+    &:hover{
+        background-color: var(--hover-color);
+    }
+    &:active{
+        background-color: var(--active-color);
+    }
+}
+.BtnLinkPasswordConfirm{
+    position: absolute;
+    margin-top: 66%;
+}
+.CodeConfirmInputsBox{
+    display: flex;
+    width: 60%;
+    height: 13%;
+    /* background: rgb(89, 107, 100); */
+}
+.CodeConfirmInputs{
+    display: flex;
+    all: revert;
+    position: relative;
+    border: 0.09em solid rgb(44, 153, 255);
+    margin-left: 2%;
+    border-radius: 0.5em;
+    background-color: rgb(92, 87, 104);
+    height: 100%;
+    width: 23.5%;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-weight: 200;
+    font-size: 0.5em;
+    &:focus{
+        box-shadow: none;
+        outline: none;
+        border-color: rgb(0, 98, 255);
+    }
+}
+.TimeFormAuthConfirm{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    width: 40%;
+    height: 4%;
+    color: rgb(121, 4, 4);
+    font-size: 0.25em;
+    transition: opacity 0.2s ease;
+    margin-top: 2%;
+    /* background: gray; */
+}
+@media(max-width: 500px){
+    .TimeFormAuthConfirm{
+        font-size: 0.7em;
+    }
+    .BtnLinkPasswordConfirm{
+        margin-top: 72%;
+    }
+    .ConfirmAuth{
+        width: 100%;
+        border-radius: 1.5em;
+    }
+    .BtnConfirmAuth{
+        margin-top: 62%;
+        width: 60%;
+    }
+    .CodeConfirmInputs{
+        font-size: 1.4em;
+    }
+    .CodeConfirmInputsBox{
+        height: 11%;
+    }
+}
