@@ -5,6 +5,7 @@ import ConfirmAuth from './auth/confirmAuth'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Regist from './auth/regist'
 import { AnimatePresence } from 'framer-motion'
+import { ConfirmAuthCode } from './auth/confirmAuthCode'
 
 function App() {
   const location = useLocation()

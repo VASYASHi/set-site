@@ -6,6 +6,7 @@ import PassWordClose from '../assets/PassWordClose.png';
 import AvatarA from "../assets/AvatarA.png";
 import { NavLink } from "react-router-dom";
 import { AuthTransition } from "../motion/gradientTransitionAuth";
+import { useAttackUiTime } from "../hooks/hooks";
 
 interface State {
     password: boolean
@@ -104,6 +105,12 @@ function reducer(state: State, action: ActionState) :State{
 export default function Auth(){
     const [state, dispatch] = useReducer(reducer, initAuth);
 
+    useAttackUiTime(
+        state.count,
+        dispatch,
+        'lastDate',
+    )
+
     const fuData = useCallback(async () => {
         try {
             dispatch({type: 'ReLoading', status: true});
@@ -134,36 +141,6 @@ export default function Auth(){
         }
     }, [state.Email, state.PassWord]);
 
-    useEffect(() => {
-        if(state.count === 5){
-            const storeData = String(Date.now() + 60000);
-            localStorage.setItem('lastDate', storeData);
-            const time = setTimeout(() => {
-                localStorage.removeItem('lastDate')
-                dispatch({type: 'ReCount', placeholder: 0})
-            }, 60000)
-            return () => clearTimeout(time)
-        }
-    }, [state.count])
-
-    useEffect(() => {
-        const remAttackData = Number(localStorage.getItem('lastDate'));
-        const nowAttackData = Date.now();
-        if(remAttackData && remAttackData > nowAttackData){
-            dispatch({type: 'ReAttack', status: true})
-            const time = remAttackData - nowAttackData;
-            const timeOut = setTimeout(() => {
-                dispatch({type: 'ReCount', placeholder: 0})
-                dispatch({type: 'ReAttack', status: false})
-            }, time);
-            return () => clearTimeout(timeOut)
-        } else {
-            localStorage.removeItem('lastDate')
-            dispatch({type: 'ReCount', placeholder: 0})
-            dispatch({type: 'ReAttack', status: false})
-        }
-    }, [])
-
     const clickSetForm = useCallback(() => {
         dispatch({type: 'OutRegist'})
         const hasEmpty = state.Email.trim() === '' || state.PassWord.trim() === ''
@@ -186,7 +163,7 @@ export default function Auth(){
                 {/* <div className={`${styles.Auth} ${styles.AuthFontsAnim}`}> */}
                     <div className="H2Auth">Вход</div>
                     <div className="H3Auth">в учётную запись</div>
-                    <input value={state.Email} onChange={(e) => dispatch({type:'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Почта/Телефон"></input>
+                    <input autoFocus value={state.Email} onChange={(e) => dispatch({type:'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Почта/Телефон"></input>
                     <div className="ArgumentError">{state.ErrorEmail}</div>
                     <div className="PassAuthBlock">
                         <input value={state.PassWord} onChange={(e) => dispatch({type:'HendelPass', value: e.target.value})} style={{width: state.PassWord ? '85%' : '96%'}} type={state.password ? "text" : "password"} className="InputAuth" placeholder="Пароль"></input>

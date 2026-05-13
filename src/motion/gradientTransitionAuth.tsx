@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { motion, MotionStyle } from "framer-motion";
 import styles from "../auth/auth.module.css";
 
 interface TransitionChild {
-    children: React.ReactNode
+    children: ReactNode
 }
 
 export function AuthTransition({children} : TransitionChild){
@@ -119,7 +119,7 @@ export function ConfirmAuthTransition({children} : TransitionChild){
 
     const animationRegist = {
         animate: { filter: 'blur(0px)', x: '0%'},
-        exit: { filter:'blur(10px)', x: mobile ? '0%' : '-66%'}
+        exit: { filter:'blur(10px)', x: mobile ? '0%' : '-66%'},
     }
 
     const gradienExitRegist = {
@@ -135,7 +135,6 @@ export function ConfirmAuthTransition({children} : TransitionChild){
     return(
         <motion.div
             className="ConfirmAuth"
-            // initial={{opacity: 0}}
             animate="animate"
             exit="exit"
             variants={animationRegist}

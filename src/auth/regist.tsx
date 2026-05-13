@@ -7,6 +7,7 @@ import './auth.css';
 import './regist.css'
 import { NavLink } from "react-router-dom";
 import { RegistTransition } from "../motion/gradientTransitionAuth";
+import { useAttackUiTime } from "../hooks/hooks";
 
 interface State {
     attack: boolean
@@ -121,64 +122,40 @@ function reducer(state: State, action: ActionState){
 export default function Regist(){
     const [state, dispatch] = useReducer(reducer, initRegist);
 
+    useAttackUiTime(
+        state.count,
+        dispatch,
+        'lastRegistDate',
+    );
+
     const fuData = useCallback( async () => {
-    try{
-        dispatch({type: 'ReLoading', status: true});
-        
-        const hasLetter = /\p{L}/u.test(state.Email)
-        const formData = {
-            email: hasLetter ? state.Email.trim().replace(/ /g, '') : '',
-            password: state.PassWord.trim().replace(/ /g, ''),
-            number: hasLetter ? '' : state.Email.trim().replace(/[^0-9]/g, '')
+        try{
+            dispatch({type: 'ReLoading', status: true});
+            
+            const hasLetter = /\p{L}/u.test(state.Email)
+            const formData = {
+                email: hasLetter ? state.Email.trim().replace(/ /g, '') : '',
+                password: state.PassWord.trim().replace(/ /g, ''),
+                number: hasLetter ? '' : state.Email.trim().replace(/[^0-9]/g, '')
+            }
+            console.log(`Успешная сборка формы: email: ${formData.email}, password: ${formData.password}, number: ${formData.number}`)
+            
+            const rec = await fetch('', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            if(!rec.ok){
+                throw new Error(`Ошибка сервера: ${rec.status}`)
+            };
+            
+        } catch (error) {
+            console.log(error)
+        } finally {
+            dispatch({type: 'ReLoading', status: false})
         }
-        console.log(`Успешная сборка формы: email: ${formData.email}, password: ${formData.password}, number: ${formData.number}`)
-        
-        const rec = await fetch('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-        
-        if(!rec.ok){
-            throw new Error(`Ошибка сервера: ${rec.status}`)
-        };
-        
-    } catch (error) {
-        console.log(error)
-    } finally {
-        dispatch({type: 'ReLoading', status: false})
-    }
-    }, [state.Email, state.PassWord])
-
-    useEffect(() => {
-        if(state.count === 5){
-            const storeData = String(Date.now() + 60000);
-            localStorage.setItem('lastRegistDate', storeData);
-            const time = setTimeout(() => {
-                localStorage.removeItem('lastRegistDate')
-                dispatch({type: 'ReCount', placeholder: 0})
-            }, 60000)
-            return () => clearTimeout(time)
-        }
-    }, [state.count])
-
-    useEffect(() => {
-        const remAttackData = Number(localStorage.getItem('lastRegistDate'));
-        const nowAttackData = Date.now();
-        if(remAttackData && remAttackData > nowAttackData){
-            dispatch({type: 'ReAttack', status: true})
-            const time = remAttackData - nowAttackData;
-            const timeOut = setTimeout(() => {
-                dispatch({type: 'ReCount', placeholder: 0})
-                dispatch({type: 'ReAttack', status: false})
-            }, time);
-            return () => clearTimeout(timeOut)
-        } else {
-            localStorage.removeItem('lastRegistDate')
-            dispatch({type: 'ReCount', placeholder: 0})
-            dispatch({type: 'ReAttack', status: false})
-        }
-    }, [])    
+    }, [state.Email, state.PassWord])  
 
     const clickSetForm = useCallback(() => {
         dispatch({type: 'OutRegist'});
@@ -198,7 +175,7 @@ export default function Regist(){
         state.Email, state.PassWord, state.PassWordConfirm, state.attack,
         state.ErrorEmail, state.ErrorPassWord, state.ErrorPassWordConfirm,
         state.count ,fuData
-        ])
+    ])
 
     return(
         <form className={styles["Head-block"]} onSubmit={(e) => {e.preventDefault(); clickSetForm()}}>
@@ -211,7 +188,7 @@ export default function Regist(){
                 {/* <div className="Regist"> */}
                     <div className="H2Auth">Регистрация</div>
                     <div className="H3Auth">учётной записи</div>
-                    <input value={state.Email} onChange={(e) => dispatch({type:'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Ваша Почта/Телефон"></input>
+                    <input autoFocus value={state.Email} onChange={(e) => dispatch({type:'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Ваша Почта/Телефон"></input>
                     <div className="ArgumentError">{state.ErrorEmail}</div>
                     <div className="PassAuthBlock">
                         <input value={state.PassWord} onChange={(e) => dispatch({type:'HendelPass', value: e.target.value})} style={{width: state.PassWord ? '85%' : '96%'}} type={state.password ? "text" : "password"} className="InputAuth" placeholder="Придумайте пароль"></input>

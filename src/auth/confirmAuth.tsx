@@ -2,18 +2,22 @@ import React, { useCallback, useReducer, useEffect, CSSProperties } from "react"
 import styles from './auth.module.css';
 import './confirmAuth.css'
 import AvatarA from "../assets/AvatarA.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { ConfirmAuthTransition } from "../motion/gradientTransitionAuth";
 import { useTimerLocal } from "../hooks/useTimerLocal";
 import { time } from "framer-motion";
+import { ConfirmAuthCode } from "./confirmAuthCode";
+import { ConfirmAuthRePass } from "./confirmAuthRePass";
 
 interface State {
-    email: string
-    errorEmail: string 
-    loading: boolean  
-    stateForm: boolean
-    time: string | null
-    attack: boolean
+    email: string;
+    errorEmail: string;
+    loading: boolean;  
+    stateForm: boolean;
+    time: string | null;
+    attack: boolean;
+    statusForms: boolean; //////
+    statusFormRePass: boolean; //////
 }
 
 type ActionState =
@@ -22,7 +26,9 @@ type ActionState =
 {type: 'ReLoading', status: boolean}|
 {type: 'ReForm', status: boolean}|
 {type: 'ReTime', minutes: number, seconds: number}|
-{type: 'ReAttack', status: boolean}
+{type: 'ReAttack', status: boolean}|
+{type: 'ReStatusForms', status: boolean}|
+{type: 'ReStatusFormRePass', status: boolean}
 
 const initState: State = {
     email: '',
@@ -30,7 +36,9 @@ const initState: State = {
     loading: false,
     stateForm: false,
     time: null,
-    attack: false
+    attack: false,
+    statusForms: false, //////
+    statusFormRePass: false //////
 }
 
 function reducer (state: State , action: ActionState){
@@ -64,6 +72,17 @@ function reducer (state: State , action: ActionState){
                 ...state,
                 attack: action.status
             }
+        case 'ReStatusForms':
+            return {
+                ...state,
+                statusForms: action.status
+            }
+        case 'ReStatusFormRePass':
+            return {
+                ...state,
+                statusFormRePass: action.status,
+                statusForms: false
+            }
         case 'OutConfirm':
             const hasEmpty = state.email.trim() === '';
             const positiveEmail = state.email.trim().length <= 254;
@@ -81,7 +100,7 @@ const [state, dispatch] = useReducer(reducer, initState);
 useTimerLocal(
     state.stateForm,
     dispatch,
-    80000,
+    8000,
     'lastConfirmAuthDate',
 );
 
@@ -122,49 +141,55 @@ const clickSetForm = useCallback(() => {
     const positiveEmail = state.email.trim().length <= 254
 
     if(!hasEmpty && positiveEmail && !state.stateForm && !state.attack){
-        dispatch({type: 'ReForm', status: true})
-        fuData()
+        dispatch({type: 'ReForm', status: true});
+        fuData();
+        dispatch({type: 'ReStatusForms', status: true});
     } 
 
 }, [state.email, state.stateForm, state.attack, fuData]);
 
     return(
-        <form className={styles["Head-block"]} onSubmit={(e) => {e.preventDefault(); clickSetForm()}}>
+        <div className={styles["Head-block"]}>
             <main className="RegistEnd">
                 <div className="quoteAuth RegistQuoteAuth">
                     <img className="quoteImgAuth" src={AvatarA} alt="Grape"/>
                     <p>Мы ценим вашу конфиденциальность. Вход означает согласие с использованием cookies.</p>
                 </div>
                 <ConfirmAuthTransition>
-                    <div className="H2Auth">Восстановление</div>
-                    <div className="H3Auth">забытого пароля</div>
-                    <input value={state.email} onChange={(e) => dispatch({type: 'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Почта/Телефон"></input>
-                    <div className="ArgumentError">{state.errorEmail}</div>
-                    <div className="TimeFormAuthConfirm"
-                        style={{opacity: state.stateForm || state.attack ? '1' : '0'}}>
-                        <div style={{marginRight:'2%'}}>Отправить повторно:</div>
-                        {state.time}
-                    </div>
-                    <button 
-                        style={{
-                            '--hover-color': state.stateForm || state.attack ? 'rgba(182, 46, 66, 0.87)' : 'rgba(46, 114, 182, 0.869)',
-                            '--active-color': state.stateForm || state.attack ? 'rgba(206, 49, 73, 0.94)' : 'rgba(49, 128, 206, 0.942)',
-                            transform: `translateY(${state.errorEmail ? '50%' : '0%'})`
-                        } as CSSProperties} 
-                        disabled={state.stateForm || state.attack} className="BtnAuth BtnConfirmAuth" 
-                        type="submit"
+                    <form 
+                        className="ConfirmAuthBlock"
+                        style={{opacity: !state.statusForms && !state.statusFormRePass? '1' : '0', transition: 'opacity 1s ease', pointerEvents: !state.statusForms && !state.statusFormRePass? 'auto' : 'none'}} 
+                        onSubmit={(e) => {e.preventDefault(); clickSetForm()}}
                     >
-                        Отправить код
-                    </button>
-                    <NavLink to='/auth' end className="BtnLinkReg BtnLinkPasswordConfirm"  style={{transform: `translateY(${state.errorEmail ? '70%' : '0%'})`}}>Вернуться назад?</NavLink>
-                    <div className="CodeConfirmInputsBox" style={{display:'none'}}>
-                        <input maxLength={1} inputMode="numeric" className="CodeConfirmInputs" style={{marginLeft: '0%'}}/>
-                        <input maxLength={1} inputMode="numeric" className="CodeConfirmInputs"/>
-                        <input maxLength={1} inputMode="numeric" className="CodeConfirmInputs"/>
-                        <input maxLength={1} inputMode="numeric" className="CodeConfirmInputs"/>
-                    </div>
+                        <div className="H2Auth">Восстановление</div>
+                        <div className="H3Auth">забытого пароля</div>
+                        <input autoFocus value={state.email} disabled={state.statusForms || state.statusFormRePass} tabIndex={state.statusForms || state.statusFormRePass ? -1 : 0} onChange={(e) => dispatch({type: 'HendelEmail', value: e.target.value})} className="InputAuth" placeholder="Почта/Телефон"></input>
+                        <div className="ArgumentError">{state.errorEmail}</div>
+                        <div className="TimeFormAuthConfirm"
+                            style={{opacity: state.stateForm || state.attack ? '1' : '0'}}
+                        >
+                            <div style={{marginRight:'2%'}}>Отправить повторно:</div>
+                            {state.time}
+                        </div>
+                        <button 
+                            style={{
+                                '--hover-color': state.stateForm || state.attack ? 'rgba(182, 46, 66, 0.87)' : 'rgba(46, 114, 182, 0.869)',
+                                '--active-color': state.stateForm || state.attack ? 'rgba(206, 49, 73, 0.94)' : 'rgba(49, 128, 206, 0.942)',
+                                transform: `translateY(${state.errorEmail ? '50%' : '0%'})`
+                            } as CSSProperties} 
+                            disabled={state.statusForms || state.statusFormRePass || state.stateForm || state.attack} 
+                            className="BtnAuth BtnConfirmAuth" 
+                            tabIndex={state.statusForms ? -1 : 0}
+                            type="submit"
+                        >
+                            Отправить код
+                        </button>
+                        <NavLink tabIndex={state.statusForms || state.statusFormRePass ? -1 : 0} to='/auth' end className="BtnLinkReg BtnLinkPasswordConfirm"  style={{transform: `translateY(${state.errorEmail ? '70%' : '0%'})`}}>Вернуться назад?</NavLink>
+                    </form>
+                    <ConfirmAuthCode clickSetForm={clickSetForm} status={state.statusForms} time={state.time} dispatchStatusForm={dispatch} dispatchStatusFormRePass={dispatch}/>
+                    <ConfirmAuthRePass status={state.statusFormRePass}/>
                 </ConfirmAuthTransition>
             </main>
-        </form>
+        </div>
     )
 };
